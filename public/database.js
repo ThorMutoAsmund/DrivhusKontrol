@@ -1,5 +1,6 @@
  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics.js";
+ import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
 //import { initializeApp } from "firebase/app";
 //import { getAnalytics } from "firebase/analytics";
@@ -19,6 +20,25 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const db = getDatabase();
+const year = '2023';
+const month = '06';
+const day = '05';
+const dailyRef = (db, 'greenhouse/elmevej/'+year+'/'+month+'/'+day);
+
+onValue(dailyRef, (snapshot) => {
+  //const data = snapshot.val();
+  snapshot.forEach((childSnapshot) => {
+    childKey = childSnapshot.key;
+    childVal = childSnapshot.val();
+
+    var id1 = document.getElementById("id1");
+    var id2 = document.getElementById("id2");
+    id1.value = childKey;
+    id2.value = 'test';
+  });
+}, {
+  onlyOnce: true
+} );
 
 alert("Website started");
