@@ -1,6 +1,7 @@
- import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
- import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics.js";
- import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+//import { moment } from "https://momentjs.com/downloads/moment-with-locales.js";
 
 //import { initializeApp } from "firebase/app";
 //import { getAnalytics } from "firebase/analytics";
@@ -21,24 +22,62 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase();
-const year = '2023';
-const month = '06';
-const day = '05';
-const dailyRef = (db, 'greenhouse/elmevej/'+year+'/'+month+'/'+day);
+const dataHeader = "<tr><th>Time</th><th>Temp. inside</th><th>Temp. outside</th><th>Humi. inside</th><th>Humi. outside</th></tr>";
+
+var currentValuesTable = document.getElementById("currentValuesTable");  
+var resultsTable = document.getElementById("resultsTable");  
+var resultHeader = document.getElementById("resultHeader");
+var yearSelect = document.getElementById("yearSelect");
+var monthSelect = document.getElementById("monthSelect");
+var daySelect = document.getElementById("daySelect");
+
+var today = new Date();
+
+var thisYear = today.getUTCFullYear();  
+daySelect.value = today.getUTCDate();
+monthSelect.value = today.getUTCMonth()+1;
+yearSelect.value = thisYear;
+
+var year = yearSelect.options[yearSelect.selectedIndex].text;
+var month = monthSelect.options[monthSelect.selectedIndex].text;
+var day = daySelect.options[daySelect.selectedIndex].text;
+
+var dailyRef = ref(db, 'greenhouse/elmevej/'+year+'/'+month+'/'+day);
 
 onValue(dailyRef, (snapshot) => {
-  //const data = snapshot.val();
+  resultHeader.innerHTML = 'All results for ' + today.getDate()  + '/' + (today.getMonth()+1) + '/' + today.getFullYear();
+  var debug = "";
+  var oneDebug = "";
   snapshot.forEach((childSnapshot) => {
-    childKey = childSnapshot.key;
-    childVal = childSnapshot.val();
+    var utcTimestamp = childSnapshot.key;
+    var values = childSnapshot.val();
 
-    var id1 = document.getElementById("id1");
-    var id2 = document.getElementById("id2");
-    id1.value = childKey;
-    id2.value = 'test';
+    var date = new Date(day+'/'+month+'/'+year+' '+utcTimestamp +' UTC');
+    var localDate = date.toString();
+
+    var localHours = date.getHours();    
+    localHours = localHours < 10 ? '0'+localHours : ''+localHours;
+    var localMinutes = date.getMinutes();
+    localMinutes = localMinutes < 10 ? '0'+localMinutes : ''+localMinutes;
+    var localSeconds = date.getSeconds();
+    localSeconds = localSeconds < 10 ? '0'+localSeconds : ''+localSeconds;
+
+    oneDebug = '<tr><td><b>'+localHours+':'+localMinutes+':'+localSeconds+'</b></td>';
+    oneDebug += '<td>'+values.tIn+'</td>';
+    oneDebug += '<td>'+values.tOut+'</td>';
+    oneDebug += '<td>'+values.hIn+'</td>';
+    oneDebug += '<td>'+values.hOut+'</td></tr>';
+    debug = debug + oneDebug;
   });
+  resultsTable.innerHTML = dataHeader + debug;
+  currentValuesTable.innerHTML = dataHeader + oneDebug;
 }, {
-  onlyOnce: true
+  onlyOnce: false
 } );
 
-alert("Website started");
+// var year = yearSelect.options[yearSelect.selectedIndex].text;
+// var month = monthSelect.options[monthSelect.selectedIndex].text;
+// var day = daySelect.options[daySelect.selectedIndex].text;
+
+
+//alert("Website started");

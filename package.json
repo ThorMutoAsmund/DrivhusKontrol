@@ -9,6 +9,7 @@
   "author": "Thor Muto Asmund",
   "license": "ISC",
   "dependencies": {
-    "firebase": "^9.22.1"
+    "firebase": "^9.22.1",
+    "moment": "^2.29.4"
   }
 }
