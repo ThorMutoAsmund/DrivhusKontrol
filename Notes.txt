@@ -1,0 +1,8 @@
+Use: firebase deploy
+to deploy to github
+
+Use: http-server
+to test locally
+
+Site is live on:
+https://drivhusstyring.web.app/

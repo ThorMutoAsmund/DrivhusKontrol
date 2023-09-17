@@ -42,7 +42,8 @@ var year = yearSelect.options[yearSelect.selectedIndex].text;
 var month = monthSelect.options[monthSelect.selectedIndex].text;
 var day = daySelect.options[daySelect.selectedIndex].text;
 
-var dailyRef = ref(db, 'greenhouse/elmevej/'+year+'/'+month+'/'+day);
+var dailyRefString = 'greenhouse/elmevej/'+year+'/'+month+'/'+day;
+var dailyRef = ref(db, dailyRefString);
 
 onValue(dailyRef, (snapshot) => {
   resultHeader.innerHTML = 'All results for ' + today.getDate()  + '/' + (today.getMonth()+1) + '/' + today.getFullYear();
@@ -51,8 +52,7 @@ onValue(dailyRef, (snapshot) => {
   snapshot.forEach((childSnapshot) => {
     var utcTimestamp = childSnapshot.key;
     var values = childSnapshot.val();
-
-    var date = new Date(day+'/'+month+'/'+year+' '+utcTimestamp +' UTC');
+    var date = new Date(year+'-'+month+'/'+day+' '+utcTimestamp +' UTC');
     var localDate = date.toString();
 
     var localHours = date.getHours();    
